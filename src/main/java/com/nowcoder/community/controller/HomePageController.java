@@ -38,6 +38,7 @@ public class HomePageController {
      */
     @GetMapping("/index")
     private String getIndex(Model model, Page page){
+        //spring MVC 在处理前台传入的参数时，会自动注入并将参数信息绑定到MODEL上,所以不需要手动的绑定参数到Model上
         int rows=postService.getTotalRows(0);
         page.setRows(rows);
         page.setPath("/index");

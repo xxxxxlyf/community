@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.mapper.UserMapper">
+
+    <sql id="selectFields">
+        id,username,password,salt,type,status,email,header_url,create_time,activation_code
+    </sql>
+
+    <sql id="insertFields">
+        username,password,salt,type,status,email,header_url,create_time,activation_code
+    </sql>
+
+    <select id="selectUserById" resultType="User">
+        select <include refid="selectFields"></include>
+        from user where id=#{id}
+    </select>
+
+    <select id="selectUserByUsername" resultType="User">
+        select <include refid="selectFields"></include>
+        from user where username=#{username}
+    </select>
+
+    <select id="selectUserByEmail" resultType="User">
+        select <include refid="selectFields"></include>
+        from user where email=#{email}
+    </select>
+    
+    <insert id="addUser" parameterType="User" keyProperty="id" useGeneratedKeys="true">
+        insert user( <include refid="insertFields"></include>)
+        values (#{username},#{password},#{salt},#{type},#{status},#{email},#{headerUrl},now(),#{activationCode})
+    </insert>
+
+    <update id="updStatus">
+       update user set status=#{status} where id=#{id}
+    </update>
+
+    <update id="updPassword">
+       update user set password=#{password} where id=#{id}
+    </update>
+
+    <update id="updHeader">
+       update user set header_url=#{headerUrl} where id=#{id}
+    </update>
+</mapper>

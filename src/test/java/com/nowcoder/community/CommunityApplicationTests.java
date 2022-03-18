@@ -3,6 +3,7 @@ package com.nowcoder.community;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.mapper.DiscussPostMapper;
 import com.nowcoder.community.mapper.UserMapper;
+import com.nowcoder.community.utils.MailUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,9 @@ public class CommunityApplicationTests {
 
     @Autowired
     private DiscussPostMapper mapper1;
+
+    @Autowired
+    private MailUtil util;
 
     @Test
    public  void contextLoads() {
@@ -37,6 +41,12 @@ public class CommunityApplicationTests {
     public void test(){
         int i = mapper1.countPost(1);
         System.out.println(i);
+    }
+
+    @Test
+    public void testMail(){
+
+        util.sendMailMessage("1779178166@qq.com","test","test");
     }
 
 }

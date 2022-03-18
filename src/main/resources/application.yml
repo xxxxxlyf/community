@@ -1,7 +1,6 @@
 server:
   port: 8090
 
-
 #数据库连接配置 datasourceProperties
 spring:
   datasource:
@@ -10,6 +9,7 @@ spring:
     password: root
     url: jdbc:mysql://localhost:3306/test?characterEncoding=utf-8&useSSl=false&serverTimeZone=HongKong
     type: com.zaxxer.hikari.HikariDataSource
+# 连接池
     hikari:
       minimum-idle: 5
       maximum-pool-size: 15
@@ -19,14 +19,20 @@ spring:
 # 关闭缓存，及时的刷新动态页面中的数据
     cache: false
 
+# 邮件 MailProperties,采用qq邮箱
+  mail:
+    protocol: smtp
+# 生成的校验码
+    password: qvwhbgvnhvnqejda
+    username: 1779178166@qq.com
+    host: smtp.qq.com
+
 # mybatis 持久层配置
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.nowcoder.community.entity
   configuration:
     map-underscore-to-camel-case: true
-
-
 
 #日志
 logging:
@@ -35,3 +41,5 @@ logging:
       debug
 
 
+community:
+   domain: http://localhost:8090

@@ -19,4 +19,12 @@ public interface UserService {
      * @return
      */
     Map<String,Object> registerUser(User user);
+
+    /***
+     * 激活用户账号
+     * @param userId 用户id
+     * @param activationCode 激活码
+     * @return
+     */
+    int activateUser(int  userId,String activationCode);
 }

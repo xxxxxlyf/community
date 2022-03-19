@@ -1,11 +1,13 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.entity.ActivationConstant;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Map;
@@ -31,6 +33,16 @@ public class LoginController {
         return "/site/register";
     }
 
+    /**
+     * 返回登录界面视图
+     * @return
+     */
+    @GetMapping("/login")
+    public  String getLoginPage(){
+        //注册界面视图路径 classpath:templates/site/register.html
+        return "/site/login";
+    }
+
 
     /**
      * 注册用户
@@ -54,6 +66,31 @@ public class LoginController {
              return "/site/register";
 
          }
+    }
 
+
+    /**
+     * //http://localhost:8090/user/activation/userId/code
+     * @param userId
+     * @param activationCode
+     * @return
+     */
+    @GetMapping(path = "/user/activation/{userId}/{activationCode}")
+    public String activateUser(Model model,@PathVariable("userId") int userId,@PathVariable("activationCode")  String activationCode){
+        int i = userService.activateUser(userId, activationCode);
+        if(i== ActivationConstant.ACTIVATION_SUCCESS){
+            model.addAttribute("msg","账号已成功激活，可登录使用");
+            //登录返回登录界面
+            model.addAttribute("target","/login");
+        }else if(i==ActivationConstant.ACTIVATION_REPEAT){
+            model.addAttribute("msg","账号无需重复激活");
+            //返回首页
+            model.addAttribute("target","/index");
+        }else if(i==ActivationConstant.ACTIVATION_FAILED){
+            model.addAttribute("msg","账号信息错误或激活码错误，激活账号失败");
+            //返回首页
+            model.addAttribute("target","/index");
+        }
+        return "/site/operate-result";
     }
 }

@@ -1,6 +1,6 @@
 package com.nowcoder.community.service.impl;
 
-import com.nowcoder.community.entity.ActivationConstant;
+import com.nowcoder.community.entity.CommunityConstant;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.mapper.UserMapper;
 import com.nowcoder.community.service.UserService;
@@ -106,18 +106,18 @@ public class UserServiceImpl implements UserService {
         User user = mapper.selectUserById(userId);
         if (user != null) {
             if (user.getStatus() == 1) {
-                return ActivationConstant.ACTIVATION_REPEAT;
+                return CommunityConstant.ACTIVATION_REPEAT;
             } else {
                 if (user.getActivationCode().equals(activationCode)) {
 
                     mapper.updStatus(userId, 1);
-                    return ActivationConstant.ACTIVATION_SUCCESS;
+                    return CommunityConstant.ACTIVATION_SUCCESS;
                 } else {
-                    return ActivationConstant.ACTIVATION_FAILED;
+                    return CommunityConstant.ACTIVATION_FAILED;
                 }
             }
         } else {
-            return ActivationConstant.ACTIVATION_REPEAT;
+            return CommunityConstant.ACTIVATION_REPEAT;
         }
     }
 }

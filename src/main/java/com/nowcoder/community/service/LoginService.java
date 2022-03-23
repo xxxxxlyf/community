@@ -18,4 +18,10 @@ public interface LoginService {
      * @param ticket
      */
     void logOut(String ticket);
+
+//    /**
+//     * 忘记密码
+//     * @return
+//     */
+//    Map<String,String> forgetPassword();
 }

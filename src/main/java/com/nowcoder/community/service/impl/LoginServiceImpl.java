@@ -69,4 +69,7 @@ public class LoginServiceImpl implements LoginService {
         //修改登录凭证的状态，1表示退出登录
         ticketMapper.updStatus(ticket,1);
     }
+
+
+
 }

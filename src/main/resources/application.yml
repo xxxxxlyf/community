@@ -42,4 +42,7 @@ logging:
 
 
 community:
+#  域名
    domain: http://localhost:8090
+#  头像存放的地址
+   uploadPath: C:\Users\刘逸菲\Desktop\Java\header

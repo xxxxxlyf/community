@@ -120,4 +120,16 @@ public class UserServiceImpl implements UserService {
             return CommunityConstant.ACTIVATION_REPEAT;
         }
     }
+
+    /**
+     * 更新用户的头像信息
+     * @param userId
+     * @param headerUrl
+     * @return
+     */
+    @Override
+    public  int updateUserHeader(int userId,String headerUrl){
+        return mapper.updHeader(userId, headerUrl);
+
+    }
 }

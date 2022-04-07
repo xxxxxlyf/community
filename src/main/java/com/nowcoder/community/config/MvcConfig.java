@@ -1,6 +1,7 @@
 package com.nowcoder.community.config;
 
 import com.nowcoder.community.interceptor.LoginInterceptor;
+import com.nowcoder.community.interceptor.LoginRequiresIntecptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -23,8 +24,10 @@ public class MvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
         registry.addInterceptor(interceptor)
-                //不拦截以下静态资源
+                //在默认拦截所有路径下，不拦截以下静态资源
                 .excludePathPatterns("/**/*.css","/**/*.js,","/**/*.png","/**/*.jpg","/**/*.html");
+
     }
 }

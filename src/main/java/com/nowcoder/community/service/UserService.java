@@ -35,4 +35,12 @@ public interface UserService {
      * @return
      */
     int updateUserHeader(int userId,String headerUrl);
+    
+     /**
+     * 修改用户密码
+     * @param userId
+     * @param password
+     * @return
+     */
+    int updateUserPassport(int userId,String password);
 }

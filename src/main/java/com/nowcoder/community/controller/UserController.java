@@ -1,7 +1,14 @@
 package com.nowcoder.community.controller;
 
-import com.nowcoder.community.entity.FileType;
+/**
+ * @author lyf
+ * @projectName community
+ * @date 2022/4/8 上午 08:17
+ * @description
+ */
+
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.utils.CommunityUtil;
 import com.nowcoder.community.utils.UserHolder;
@@ -12,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,15 +28,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/**
- * @author lyf
- * @description
- * @create 2022-03-27 17:58
- **/
 @Controller
 @RequestMapping("/user")
 public class UserController {
-
 
     @Value("${community.domain}")
     private String domain;
@@ -42,6 +40,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LoginService loginService;
 
     @Autowired
     private UserHolder holder;
@@ -84,18 +85,18 @@ public class UserController {
             case "JPEG":
                 flag = true;
             case "JPG":
-                flag = true;
+                flag = true; break;
             default:
                 flag = false;
         }
         if (!flag) {
             model.addAttribute("error", "文件格式必须是图片格式，注意上传的文件必格式");
-             //回到设置页面
+            //回到设置页面
             return "/site/setting";
         }
 
         //文件存放的路径
-        String name=CommunityUtil.getUUID() + "." + suffix;
+        String name= CommunityUtil.getUUID() + "." + suffix;
         String path = uploadPath + "/" + name;
         File file = new File(path);
 
@@ -127,7 +128,7 @@ public class UserController {
         // 服务器存放路径
         fileName = uploadPath + "/" + fileName;
         // 文件后缀
-        String suffix = fileName.substring(fileName.lastIndexOf("."));
+        String suffix = fileName.substring(fileName.lastIndexOf(".")+1);
         // 响应图片
         response.setContentType("image/" + suffix);
         try (
@@ -145,4 +146,41 @@ public class UserController {
 
     }
 
+
+    /**
+     * 修改用戶密碼
+     * @param oldPassport
+     * @param newPassport
+     * @param model
+     * @param cookie 请求中的登录凭证
+     * @return
+     */
+    @PostMapping("/updPassport")
+    public String updateUserPassport(String oldPassport,String newPassport,Model model,@CookieValue("ticket") String cookie){
+        //获得用户信息
+        User user=holder.getUser();
+        //验证原始密码是否正确
+        String md5Str=CommunityUtil.getMd5Str(oldPassport+user.getSalt());
+        if(!md5Str.equals(user.getPassword())){
+            model.addAttribute("error1","密码输入错误");
+            //验证密码错误时,停留在设置界面
+            return "/site/setting";
+        }else{
+            //新旧密码不能重复
+            if(oldPassport.equals(newPassport)){
+                model.addAttribute("error2","密码设定不能与旧密码重复");
+                //验证密码错误时,停留在设置界面
+                return "/site/setting";
+            }
+            //生成新的密码并更新到数据库中
+            String newStr=CommunityUtil.getMd5Str(newPassport+user.getSalt());
+            userService.updateUserPassport(user.getId(),newStr);
+            //修改登录凭证无效
+            loginService.logOut(cookie);
+            //跳转到登录界面 用户重新登录账号
+            return "redirect:/login";
+        }
+    }
+
 }
+

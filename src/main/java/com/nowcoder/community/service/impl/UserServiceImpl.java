@@ -132,4 +132,10 @@ public class UserServiceImpl implements UserService {
         return mapper.updHeader(userId, headerUrl);
 
     }
+    
+    @Override
+    public int updateUserPassport(int userId, String password) {
+        return mapper.updPassword(userId,password);
+    }
+
 }

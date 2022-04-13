@@ -26,4 +26,13 @@ public interface DiscussPostMapper {
      * @return
      */
     int countPost(@Param("userId") int userId);
+
+    /**
+     * 增加一个用户帖子信息
+     * @param content
+     * @param title
+     * @param userId
+     * @return
+     */
+    int addPost(String content,String title,int userId);
 }

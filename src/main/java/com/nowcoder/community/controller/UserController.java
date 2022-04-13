@@ -7,6 +7,7 @@ package com.nowcoder.community.controller;
  * @description
  */
 
+import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.service.UserService;
@@ -52,9 +53,10 @@ public class UserController {
 
     /**
      * 获得用户设置界面
-     *
+     * LoginRequired 表明该接口必须要登录之后才能访问
      * @return
      */
+    @LoginRequired
     @GetMapping("/setting")
     public String getUserSettingPage() {
         return "/site/setting";

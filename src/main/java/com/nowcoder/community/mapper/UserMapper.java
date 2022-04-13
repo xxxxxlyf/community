@@ -56,7 +56,7 @@ public interface UserMapper {
      * @param password
      * @return
      */
-    int updPassword(int id, int password);
+    int updPassword(int id, String password);
 
     /**
      * 修改用户头像

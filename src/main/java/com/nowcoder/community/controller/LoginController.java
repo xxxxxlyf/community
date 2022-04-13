@@ -153,7 +153,6 @@ public class LoginController {
      * @Param httpSession session【储存在服务端】
      * @return
      */
-    @LoginRequired(required = true)
     @PostMapping("/loginUser")
     public String loginUser(String username, String password, String code, boolean rememberMe, Model model,HttpSession session,HttpServletResponse response){
         //验证码是否正确

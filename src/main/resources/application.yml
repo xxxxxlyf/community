@@ -1,7 +1,7 @@
 server:
   port: 8090
 
-#Êı¾İ¿âÁ¬½ÓÅäÖÃ datasourceProperties
+# datasourceProperties
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -9,32 +9,30 @@ spring:
     password: root
     url: jdbc:mysql://localhost:3306/test?characterEncoding=utf-8&useSSl=false&serverTimeZone=HongKong
     type: com.zaxxer.hikari.HikariDataSource
-# Á¬½Ó³Ø
+# poolæ± 
     hikari:
       minimum-idle: 5
       maximum-pool-size: 15
       idle-timeout: 30000
-# Ä£°åÒıÇæ
+# æ¨¡æ¿å¼•æ“
   thymeleaf:
-# ¹Ø±Õ»º´æ£¬¼°Ê±µÄË¢ĞÂ¶¯Ì¬Ò³ÃæÖĞµÄÊı¾İ
     cache: false
 
-# ÓÊ¼ş MailProperties,²ÉÓÃqqÓÊÏä
+
   mail:
     protocol: smtp
-# Éú³ÉµÄĞ£ÑéÂë
     password: qvwhbgvnhvnqejda
     username: 1779178166@qq.com
     host: smtp.qq.com
 
-# mybatis ³Ö¾Ã²ãÅäÖÃ
+
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.nowcoder.community.entity
   configuration:
     map-underscore-to-camel-case: true
 
-#ÈÕÖ¾
+
 logging:
   level:
     com.nowcoder.comunity:
@@ -42,7 +40,6 @@ logging:
 
 
 community:
-#  ÓòÃû
+
    domain: http://localhost:8090
-#  Í·Ïñ´æ·ÅµÄµØÖ·
-   uploadPath: C:\Users\ÁõÒİ·Æ\Desktop\Java\header
+   uploadPath: C:\Users\åˆ˜é€¸è²\Desktop\Java\header

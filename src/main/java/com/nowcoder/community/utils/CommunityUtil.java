@@ -1,13 +1,16 @@
 package com.nowcoder.community.utils;
 
 
+import com.alibaba.fastjson.JSONObject;
+import netscape.javascript.JSObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.DigestUtils;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
- * @author 刘逸菲
+ * @author lyf
  * @create 2022-03-18 23:56
  *
  **/
@@ -35,5 +38,34 @@ public class CommunityUtil {
             //生成MD5加密串，16进制格式
             return DigestUtils.md5DigestAsHex(origin.getBytes());
         }
+    }
+
+
+    /**
+     * 通用数据返回
+     * @param msg
+     * @param data
+     * @param code
+     * @return
+     */
+    public static String getReturnMsg(String msg, int code, Map<String ,Object>data){
+        JSONObject object=new JSONObject();
+        object.put("msg",msg);
+        object.put("code",code);
+        if(!data.keySet().isEmpty()){
+          for (String key:data.keySet()){
+
+              data.put(key,data.get(key));
+          }
+
+        }
+
+        return object.toJSONString();
+    }
+
+
+
+    public static String getReturnMsg(String msg,int code){
+        return getReturnMsg(msg,code,null);
     }
 }

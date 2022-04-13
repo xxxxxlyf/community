@@ -78,6 +78,14 @@
             <version>2.3.2</version>
         </dependency>
 
+       <!--fastjson 通用数据返回-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.80</version>
+        </dependency>
+
+
 
     </dependencies>
 

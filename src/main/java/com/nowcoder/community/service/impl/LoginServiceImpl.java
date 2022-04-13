@@ -70,6 +70,4 @@ public class LoginServiceImpl implements LoginService {
         ticketMapper.updStatus(ticket,1);
     }
 
-
-
 }

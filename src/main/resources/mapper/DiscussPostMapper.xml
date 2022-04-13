@@ -7,6 +7,10 @@
         id,user_id,title,content,type,status,score,create_time,comment_count
     </sql>
 
+    <sql id="insertFields">
+        user_id,title,content,type,status,score,create_time,comment_count
+    </sql>
+
     <select id="getPosts" resultType="DiscussPost">
         select <include  refid="selectFields"></include>
         from discuss_post where status!=2
@@ -20,4 +24,9 @@
         from discuss_post where status!=2
         <if test="userId!=0"> and user_id=#{userId}</if>
     </select>
+
+    <insert id="addPost">
+        insert  into discuss_post (<include refid="insertFields"></include>)
+        values (#{userId},#{title},#{content},'0','0','0',NOW(),'0')
+    </insert>
 </mapper>

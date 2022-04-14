@@ -23,4 +23,7 @@ public interface DiscussPostService {
      * @return
      */
     int addPosts(String content,String title,int userid);
+    
+    
+    DiscussPost getPostById(int id);
 }

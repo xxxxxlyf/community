@@ -52,7 +52,7 @@ public class CommunityUtil {
         JSONObject object=new JSONObject();
         object.put("msg",msg);
         object.put("code",code);
-        if(!data.keySet().isEmpty()){
+        if(data!=null&&!data.keySet().isEmpty()){
           for (String key:data.keySet()){
 
               data.put(key,data.get(key));

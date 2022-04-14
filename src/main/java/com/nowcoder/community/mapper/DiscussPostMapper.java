@@ -35,4 +35,11 @@ public interface DiscussPostMapper {
      * @return
      */
     int addPost(String content,String title,int userId);
+    
+     /**
+     * 根据id查询帖子详情
+     * @param id
+     * @return
+     */
+    DiscussPost getPostById(int id);
 }

@@ -49,5 +49,11 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         int i= mapper.addPost(content, title, userid);
         return i;
     }
+    
+      @Override
+    public DiscussPost getPostById(int id) {
+        return mapper.getPostById(id);
+
+    }
 
 }

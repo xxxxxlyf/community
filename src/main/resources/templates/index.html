@@ -28,7 +28,7 @@
 							</li>
                             <!--loginUser不为空，表示登录后显示消息-->
 							<li class="nav-item ml-3 btn-group-vertical" th:if="${loginUser!=null}">
-								<a class="nav-link position-relative" href="site/letter.html">消息<span class="badge badge-danger">12</span></a>
+								<a class="nav-link position-relative" th:href="@{/message/getMsgList}">消息<span class="badge badge-danger">12</span></a>
 							</li>
 							<!--loginUser为空，表示未登录显示注册-->
 							<li class="nav-item ml-3 btn-group-vertical" th:if="${loginUser==null}">

@@ -8,6 +8,7 @@ package com.nowcoder.community.controller;
  */
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.service.UserService;
@@ -182,5 +183,9 @@ public class UserController {
             return "redirect:/login";
         }
     }
+
+
+
+
 
 }

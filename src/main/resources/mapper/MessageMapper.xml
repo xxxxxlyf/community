@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.mapper.MessageMapper">
+
+
+    <sql id="selectFields">
+        id,from_id,to_id,conversation_id,content,status,create_time
+    </sql>
+
+
+    <select id="getConversationList" resultType="Message">
+      select a.*
+      from message a , (select conversation_id,max(id)as max_id  from message where  status!=2 and from_id!=1
+      and (to_id=#{userId} or from_id=#{userId}) GROUP BY conversation_id )b
+      where a.conversation_id=b.conversation_id and a.id=b.max_id ORDER BY create_time desc
+      LIMIT #{offset},#{limit}
+    </select>
+
+
+    <select id="getConversationCount" resultType="integer">
+     select count(id) as count from (select max(id)as id  from message where `status`!=2 and from_id!=1
+     and (to_id=#{userId} or from_id=#{userId})
+     GROUP BY conversation_id )a
+    </select>
+
+
+    <select id="getLetters" resultType="Message">
+        select <include refid="selectFields"></include>
+        from message where conversation_id=#{cId} and `status`!=2  and from_id!=1
+        ORDER BY create_time desc LIMIT #{offset},#{limit}
+    </select>
+
+
+    <select id="getLettersCount" resultType="integer">
+        select count(1)
+        from message where conversation_id=#{cId} and `status`!=2 and from_id!=1
+    </select>
+
+    <select id="getUnreadConversationCount" resultType="integer">
+        select count(1)
+        from message where `status`=0 and from_id!=1
+        and to_id=#{userId}
+        <if test="cId!=null"> and conversation_id=#{cId}</if>
+</select>
+</mapper>

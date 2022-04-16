@@ -1,5 +1,7 @@
 package com.nowcoder.community.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,19 +20,19 @@ public class CookieUtil {
      * @return
      */
     public static String getCookieValue(HttpServletRequest request,String cookieName){
+        if (request == null || cookieName == null) {
+            throw new IllegalArgumentException("参数为空!");
+        }
 
-        if(request==null||cookieName==null){
-            throw  new IllegalArgumentException("参数不为空");
-        }else{
-            Cookie[] cookies = request.getCookies();
-            if(cookies!=null){
-                for (Cookie cookie : cookies) {
-                    if(cookie.getName().equals(cookieName)){
-                        return cookie.getValue();
-                    }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(cookieName)) {
+                    return cookie.getValue();
                 }
             }
-            return null;
         }
+
+        return null;
     }
 }

@@ -13,7 +13,6 @@ import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.utils.CommunityUtil;
 import com.nowcoder.community.utils.UserHolder;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class UserController {
 
     /**
      * 获得用户设置界面
-     * LoginRequired 表明该接口必须要登录之后才能访问
+     *
      * @return
      */
     @LoginRequired
@@ -185,4 +184,3 @@ public class UserController {
     }
 
 }
-

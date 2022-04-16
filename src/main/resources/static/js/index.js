@@ -2,18 +2,26 @@ $(function(){
 	$("#publishBtn").click(publish);
 });
 
+$(function(){
+	$("#test").click(test);
+});
+
+function test() {
+	$("#publishModal").modal("show");
+}
+
 function publish() {
 	//隐藏发布栏
 	$("#publishModal").modal("hide");
-    // 获取标题和内容
+	// 获取标题和内容
 	var title = $("#recipient-name").val();
 	var content = $("#message-text").val();
-	console.log(title);
-	console.log(content);
 	// 发送异步请求(POST)
 	alert(title+content);
 	$.post(
+		//发送异步请求
 		"/discussPost/addPost",
+		//请求参数
 		{"title":title,"content":content},
 		function(data) {
 			data = $.parseJSON(data);

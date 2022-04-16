@@ -1,7 +1,6 @@
 package com.nowcoder.community.controller;
 
 import com.google.code.kaptcha.Producer;
-import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.CommunityConstant;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LoginService;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
@@ -167,7 +167,6 @@ public class LoginController {
         int expiredMs=rememberMe?CommunityConstant.REMEMBER_EXPIRED_SECONDS:CommunityConstant.DEFAULT_EXPIRED_SECONDS;
         Map<String,String> map=loginService.login(username,password,expiredMs);
         if(map.containsKey("ticket")){
-            //登录成功后，重定向到首页
             //cookie中存入登录用户凭证
             //cookie是一个特殊的键值对信息，存放重要的信息
             Cookie cookie=new Cookie("ticket",map.get("ticket"));
@@ -177,12 +176,11 @@ public class LoginController {
             cookie.setPath("/");
             //响应体中存入cookie，后续继续发送请求时将会携带该cookie，保证了请求访问的连续性
             response.addCookie(cookie);
-            //浏览器发出二次请求
+            //登录成功后，重定向到首页
             return "redirect:/index";
         }else{
             model.addAttribute("userError",map.get("userError"));
             model.addAttribute("passwordError",map.get("passwordError"));
-
             //返回登录首页
             return "/site/login";
         }

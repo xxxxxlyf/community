@@ -60,7 +60,10 @@ public class HomePageController {
 
         //模型绑定需要处理的数据
         model.addAttribute("discussPosts",postsInfo);
-        //返回视图 templates/index.html,tymleaf
+        //返回视图 templates/index.html,thymeleaf
         return "/index";
     }
+
+
+
 }

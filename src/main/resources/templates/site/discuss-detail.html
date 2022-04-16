@@ -89,7 +89,7 @@
 							<ul class="d-inline float-right">
 								<li class="d-inline ml-2"><a href="#" class="text-primary">赞 11</a></li>
 								<li class="d-inline ml-2">|</li>
-								<li class="d-inline ml-2"><a href="#replyform" class="text-primary">回帖 7</a></li>
+								<li class="d-inline ml-2"><a href="#replyform" class="text-primary" th:text="${post.commentCount}">回帖 7</a></li>
 							</ul>
 						</div>
 					</div>
@@ -110,7 +110,8 @@
 				<!-- 回帖数量 -->
 				<div class="row">
 					<div class="col-8">
-						<h6><b class="square"></b> <i>30</i>条回帖</h6>
+						<!-- 替換数量 -->
+						<h6><b class="square"></b> <i th:text="${post.commentCount}">30</i>条回帖</h6>
 					</div>
 					<div class="col-4 text-right">
 						<a href="#replyform" class="btn btn-primary btn-sm">&nbsp;&nbsp;回&nbsp;&nbsp;帖&nbsp;&nbsp;</a>
@@ -118,122 +119,98 @@
 				</div>
 				<!-- 回帖列表 -->
 				<ul class="list-unstyled mt-4">
-					<!-- 第1条回帖 -->
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
+					<!-- 遍歷帖子信息 -->
+					<li class="media pb-3 pt-3 mb-3 border-bottom" th:each="CommentOV:${commentVOList}">
 						<a href="profile.html">
-							<img src="http://images.nowcoder.com/head/2t.png" class="align-self-start mr-4 rounded-circle user-header" alt="用户头像" >
+							<!-- 替換帖子評論中的頭像 -->
+							<img th:src="${CommentOV.commentUser.headerUrl}" class="align-self-start mr-4 rounded-circle user-header" alt="用户头像" >
 						</a>
 						<div class="media-body">
 							<div class="mt-0">
-								<span class="font-size-12 text-success">掉脑袋切切</span>
-								<span class="badge badge-secondary float-right floor">1#</span>
+								<span class="font-size-12 text-success" th:utext="${CommentOV.commentUser.username}">掉脑袋切切</span>
+								<span class="badge badge-secondary float-right floor">
+									<!-- ×××Stat 这是Thymeleaf提供的对象，前面的×××就是each循环冒号前面的值，这个对象index(索引),count(),size(),current(),even(),odd(),first(),last()等属性-->
+									<i th:text="${page.offset+CommentOVStat.count}">1</i>#
+								</span>
 							</div>
-							<div class="mt-2">
+							<div class="mt-2" th:utext="${CommentOV.comment.content}">
 								这开课时间是不是有点晚啊。。。
 							</div>
 							<div class="mt-4 text-muted font-size-12">
-								<span>发布于 <b>2019-04-15 15:32:18</b></span>
+								<span>发布于 <b th:text="${#dates.format(CommentOV.comment.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b></span>
 								<ul class="d-inline float-right">
 									<li class="d-inline ml-2"><a href="#" class="text-primary">赞(1)</a></li>
 									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2"><a href="#" class="text-primary">回复(2)</a></li>
+									<li class="d-inline ml-2"><a href="#" class="text-primary">回复(<i th:text="${CommentOV.replyPostCommentCount}">2</i>)</a></li>
 								</ul>
 							</div>
 							<!-- 回复列表 -->
 							<ul class="list-unstyled mt-4 bg-gray p-3 font-size-12 text-muted">
-								<!-- 第1条回复 -->
-								<li class="pb-3 pt-3 mb-3 border-bottom">
+								<!-- 遍歷帖子的回復信息 -->
+								<li class="pb-3 pt-3 mb-3 border-bottom" th:each="replyOV:${CommentOV.replyVOList}">
 									<div>
-										<span><b class="text-info">寒江雪</b>:&nbsp;&nbsp;</span>
-										<span>这个是直播时间哈，觉得晚的话可以直接看之前的完整录播的~</span>
+										<span th:if="${replyOV.target==null}">
+											<b class="text-info" th:text="${replyOV.replyUser.username}">寒江雪</b>:
+										</span>
+										<!-- target!=null時，说明当前评论还有回复贴存在 -->
+										<span th:if="${replyOV.target!=null}">
+											<i class="text-info"  th:text="${replyOV.replyUser.username}">XXX</i>回复:
+											<b class="text-info" th:text="${replyOV.target.username}">XXXX</b>
+										</span>
+										<span th:utext="${replyOV.replyComment.content}">这个是直播时间哈，觉得晚的话可以直接看之前的完整录播的~</span>
+
 									</div>
+
 									<div class="mt-3">
-										<span>2019-04-15 15:32:18</span>
+										<!-- 回复时间 -->
+										<span th:text="${#dates.format(replyOV.replyComment.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</span>
 										<ul class="d-inline float-right">
 											<li class="d-inline ml-2"><a href="#" class="text-primary">赞(1)</a></li>
 											<li class="d-inline ml-2">|</li>
-											<li class="d-inline ml-2"><a href="#huifu01" data-toggle="collapse" class="text-primary">回复</a></li>
+											<li class="d-inline ml-2"><a th:href="|#huifu-${replyOVStat.count}|" data-toggle="collapse" class="text-primary">回复</a></li>
 										</ul>
-										<div id="huifu01" class="mt-4 collapse">
-											<div>
-												<input type="text" class="input-size" placeholder="回复寒江雪"/>
-											</div>
-											<div class="text-right mt-2">
-												<button type="button" class="btn btn-primary btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
-											</div>										
+										<div th:id="|huifu-${replyOVStat.count}|" class="mt-4 collapse">
+											<!-- 回复评论中的评论 -->
+											<form th:action="@{|/comment/add/${post.id}|}" method="post">
+												<div>
+													<!-- 评论内容 comment.content -->
+													<input name="content" type="text" class="input-size" th:placeholder="|回复${replyOV.replyUser.username}|"/>
+													<!-- 传入隐含条件,Comment. entityType  默认值为2，意味着是给评论中的评论数据 -->
+													<input name="entityType" type="hidden" value="2">
+													<!-- 传入隐含条件,Comment. entityId -->
+													<input name="entityId" type="hidden" th:value="${CommentOV.comment.id}">
+													<!-- 传入隐含条件,Comment. targetId -->
+													<input name="targetId" type="hidden" th:value="${replyOV.replyUser.id}">
+												</div>
+												<div class="text-right mt-2">
+													<!-- type=submit时才会将表单数据提交到指定的action url上 -->
+													<button type="submit" class="btn btn-primary btn-sm" onclick="#">回 复</button>
+												</div>
+											</form>
 										</div>
 									</div>								
 								</li>
-								<!-- 第2条回复 -->
-								<li class="pb-3 pt-3 mb-3 border-bottom">
-									<div>
-										<span><i class="text-info">Sissi</i> 回复 <b class="text-info">寒江雪</b>:&nbsp;&nbsp;</span>
-										<span>怎么买录播课程呢</span>
-									</div>
-									<div class="mt-3">
-										<span>2019-04-15 15:32:18</span>
-										<ul class="d-inline float-right">
-											<li class="d-inline ml-2"><a href="#" class="text-primary">赞(1)</a></li>
-											<li class="d-inline ml-2">|</li>
-											<li class="d-inline ml-2"><a href="#huifu02" data-toggle="collapse" class="text-primary">回复</a></li>
-										</ul>
-										<div id="huifu02" class="mt-4 collapse">
-											<div>
-												<input type="text" class="input-size" placeholder="回复Sissi" />
-											</div>
-											<div class="text-right mt-2">
-												<button type="button" class="btn btn-primary btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
-											</div>										
-										</div>																	
-									</div>								
-								</li>
+
 								<!-- 回复输入框 -->
 								<li class="pb-3 pt-3">
-									<div>
-										<input type="text" class="input-size" placeholder="请输入你的观点"/>
-									</div>
-									<div class="text-right mt-2">
-										<button type="button" class="btn btn-primary btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
-									</div>
+									<form th:action="@{|/comment/add/${post.id}|}" method="post">
+										<div>
+											<input name="content" type="text" class="input-size" placeholder="请输入你的观点"/>
+											<!-- 传入隐含条件,Comment. entityType  默认值为1，意味着是给帖子的评论数据 -->
+											<input name="entityType" type="hidden" value="2">
+											<!-- 传入隐含条件,Comment. entityId -->
+											<input name="entityId" type="hidden" th:value="${CommentOV.comment.id}">
+											<!-- 传入隐含条件,Comment. targetId -->
+											<input name="targetId" type="hidden" th:value="0">
+										</div>
+										<div class="text-right mt-2">
+											<button type="submit" class="btn btn-primary btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
+										</div>
+									</form>
 								</li>
 							</ul>
 						</div>
 					</li>
-					<!-- 第2条回帖 -->
-					<li class="media pb-3 pt-3 mb-3 border-bottom">
-						<a href="profile.html">
-							<img src="http://images.nowcoder.com/head/3t.png" class="align-self-start mr-4 rounded-circle user-header" alt="用户头像" >
-						</a>
-						<div class="media-body">
-							<div class="mt-0">
-								<span class="font-size-12 text-success">Nikeless</span>
-								<span class="badge badge-secondary float-right floor">1#</span>
-							</div>
-							<div class="mt-2">
-								强烈支持!!!
-							</div>
-							<div class="mt-4 text-muted font-size-12">
-								<span>发布于 <b>2019-04-15 15:32:18</b></span>
-								<ul class="d-inline float-right">
-									<li class="d-inline ml-2"><a href="#" class="text-primary">赞(1)</a></li>
-									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2"><a href="#" class="text-primary">回复(2)</a></li>
-								</ul>
-							</div>
-							<!-- 回复列表 -->
-							<ul class="list-unstyled mt-4 bg-gray p-3 font-size-12 text-muted">
-								<!-- 回复输入框 -->
-								<li class="pb-3 pt-3">
-									<div>
-										<input type="text" class="input-size" placeholder="请输入你的观点"/>
-									</div>
-									<div class="text-right mt-2">
-										<button type="button" class="btn btn-primary btn-sm" onclick="#">&nbsp;&nbsp;回&nbsp;&nbsp;复&nbsp;&nbsp;</button>
-									</div>
-								</li>
-							</ul>
-						</div>
-					</li>									
 				</ul>
 				<!-- 分页 -->
 				<nav class="mt-5">
@@ -250,12 +227,21 @@
 					</ul>
 				</nav>			
 			</div>
+
 			<!-- 回帖输入 -->
 			<div class="container mt-3">
-				<form class="replyform">
+				<!-- @{} url link ||变量  -->
+				<form class="replyform" th:action="@{|/comment/add/${post.id}|}" method="post">
 					<p class="mt-3">
 						<a name="replyform"></a>
-						<textarea placeholder="在这里畅所欲言你的看法吧!"></textarea>
+						<!-- Comment. content -->
+						<textarea placeholder="在这里畅所欲言你的看法吧!" name="content"></textarea>
+						<!-- 传入隐含条件,Comment. entityType  默认值为1，意味着是给帖子的评论数据 -->
+						<input name="entityType" type="hidden" value="1">
+						<!-- 传入隐含条件,Comment. entityId -->
+						<input name="entityId" type="hidden" th:value="${post.id}">
+						<!-- 传入隐含条件,Comment. targetId -->
+						<input name="targetId" type="hidden" value="0">
 					</p>
 					<p class="text-right">
 						<button type="submit" class="btn btn-primary btn-sm">&nbsp;&nbsp;回&nbsp;&nbsp;帖&nbsp;&nbsp;</button>

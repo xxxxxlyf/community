@@ -15,6 +15,7 @@ public interface DiscussPostService {
 
     int getTotalRows(int userId);
 
+
     /**
      * 插入帖子
      * @param content
@@ -23,7 +24,10 @@ public interface DiscussPostService {
      * @return
      */
     int addPosts(String content,String title,int userid);
-    
-    
+
+
     DiscussPost getPostById(int id);
+
+
+
 }

@@ -1,45 +1,45 @@
 server:
   port: 8090
 
+
 # datasourceProperties
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
-    url: jdbc:mysql://localhost:3306/test?characterEncoding=utf-8&useSSl=false&serverTimeZone=HongKong
+    url: jdbc:mysql://localhost:3306/base?characterEncoding=utf-8&useSSl=false&serverTimeZone=HongKong
     type: com.zaxxer.hikari.HikariDataSource
-# pool池
+    # pool
     hikari:
       minimum-idle: 5
       maximum-pool-size: 15
       idle-timeout: 30000
-# 模板引擎
   thymeleaf:
     cache: false
 
-
+  # MailProperties
   mail:
     protocol: smtp
     password: qvwhbgvnhvnqejda
     username: 1779178166@qq.com
     host: smtp.qq.com
 
-
+# mybatis
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.nowcoder.community.entity
   configuration:
     map-underscore-to-camel-case: true
 
-
+# log 设置com.nowcoder.comunity下的所有类的日志级别为debug
 logging:
   level:
-    com.nowcoder.comunity:
-      debug
+    com.nowcoder.comunity: debug
 
-
+#自定义配置
 community:
+  domain: http://localhost:8090
 
-   domain: http://localhost:8090
-   uploadPath: C:\Users\刘逸菲\Desktop\Java\header
+  uploadPath: C:\Users\F1336301\Desktop\pic
+

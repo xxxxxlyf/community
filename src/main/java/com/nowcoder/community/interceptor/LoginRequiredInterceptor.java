@@ -47,4 +47,3 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
 
     }
 }
-

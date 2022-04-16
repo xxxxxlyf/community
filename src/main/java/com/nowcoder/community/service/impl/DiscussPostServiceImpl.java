@@ -4,6 +4,7 @@ import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.mapper.DiscussPostMapper;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.utils.SensitivaWordsFilter;
+import com.sun.mail.imap.protocol.ID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import org.springframework.web.util.HtmlUtils;
 import java.util.List;
 
 /**
- * @author lyf
+ * @author 刘逸菲
  * @create 2022-03-15 18:40
  **/
 @Service
@@ -24,7 +25,6 @@ public class DiscussPostServiceImpl implements DiscussPostService {
     @Autowired
     private SensitivaWordsFilter filter;
 
-
     @Override
     public  List<DiscussPost> getPosts(int userId, int offset, int limit){
         return mapper.getPosts(userId, offset, limit);
@@ -34,6 +34,7 @@ public class DiscussPostServiceImpl implements DiscussPostService {
     public int getTotalRows(int userId) {
         return mapper.countPost(userId);
     }
+
 
     @Override
     public int addPosts(String content, String title, int userid) {
@@ -49,11 +50,12 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         int i= mapper.addPost(content, title, userid);
         return i;
     }
-    
-      @Override
+
+    @Override
     public DiscussPost getPostById(int id) {
         return mapper.getPostById(id);
 
     }
+
 
 }

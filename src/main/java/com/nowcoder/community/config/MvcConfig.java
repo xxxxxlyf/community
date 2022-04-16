@@ -2,6 +2,7 @@ package com.nowcoder.community.config;
 
 import com.nowcoder.community.interceptor.LoginInterceptor;
 import com.nowcoder.community.interceptor.LoginRequiredInterceptor;
+import com.nowcoder.community.interceptor.TestIntercptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -32,9 +33,6 @@ public class MvcConfig implements WebMvcConfigurer {
                 //不拦截以下静态资源
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
 
-        registry.addInterceptor(intercptor1)
-                 //不拦截以下静态资源
-                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
+        registry.addInterceptor(intercptor1);
     }
 }
-

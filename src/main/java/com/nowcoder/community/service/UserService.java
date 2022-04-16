@@ -29,14 +29,14 @@ public interface UserService {
     int activateUser(int  userId,String activationCode);
 
     /**
-     * 更新用户的头像信息
+     * 更新用戶头像
      * @param userId
      * @param headerUrl
      * @return
      */
     int updateUserHeader(int userId,String headerUrl);
-    
-     /**
+
+    /**
      * 修改用户密码
      * @param userId
      * @param password

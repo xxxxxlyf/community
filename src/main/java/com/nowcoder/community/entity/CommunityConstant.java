@@ -30,4 +30,14 @@ public class CommunityConstant {
      * 记住密码时候有效时间为30day
      */
     public static int REMEMBER_EXPIRED_SECONDS=60*60*24*30;
+
+    /**
+     * 评论对象类型-帖子
+     */
+    public static  int COMMENT_TYPE_POST=1;
+
+    /**
+     * 评论对象类型-评论
+     */
+    public static  int COMMENT_TYPE_REPLY=2;
 }

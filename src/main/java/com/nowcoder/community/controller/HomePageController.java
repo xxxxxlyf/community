@@ -4,8 +4,10 @@ import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.DiscussPostService;
+import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,9 @@ public class HomePageController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private LikeService likeService;
+
     /**
      * 进入到首页【默认显示前10条帖子内容】
      * model springMvc 中的Model层，用于绑定vivew中处理的数据
@@ -53,6 +58,10 @@ public class HomePageController {
 
                 User user=userService.selectUserById(post.getUserId());
                 map.put("user",user);
+
+                long likeQty=likeService.getEntityLikeQty(post.getId(),1);
+                map.put("likeQty",likeQty);
+
                 //数据写入
                 postsInfo.add(map);
             }
@@ -64,6 +73,17 @@ public class HomePageController {
         return "/index";
     }
 
+
+    /**
+     *
+     * 返回服務器500异常页面
+     * @return
+     */
+    @GetMapping("/getError")
+    public String getError(){
+        return "/error/500";
+
+    }
 
 
 }

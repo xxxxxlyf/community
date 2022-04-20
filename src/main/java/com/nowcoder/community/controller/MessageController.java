@@ -7,11 +7,11 @@ import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.MessageService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.utils.UserHolder;
-import com.sun.media.jfxmediaimpl.HostUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
@@ -89,6 +89,33 @@ public class MessageController {
         //模型绑定待处理的数据
         model.addAttribute("map",maps);
         return "/site/letter";
+    }
+
+
+    /**
+     * 查询会话详情
+     * @param model 绑定数据model
+     * @param cid 会话id
+     * @return
+     */
+    @GetMapping("/letters/{cid}")
+    public String getLetterDetail(@PathVariable("cid")String cid,Model model,Page page){
+        //设置分页信息
+        page.setPath("/message/letters/"+cid);
+        page.setLimit(5);
+        page.setRows(messageService.getLettersCount(cid));
+        //查询会话对象
+        int contactId=Integer.valueOf(cid.substring(0,cid.indexOf("_")))==holder.getUser().getId()?Integer.valueOf(cid.substring(cid.indexOf("_")+1)):Integer.valueOf(cid.substring(0,cid.indexOf("_")));
+        User contactUser=userService.selectUserById(contactId);
+        model.addAttribute("contactUser",contactUser);
+        model.addAttribute("user",holder.getUser());
+        //根据会话查询会话列表
+        List<Message>lettersInfo=messageService.getLetters(cid,page.getOffset(),page.getLimit());
+        List<Map<String,Object>>maps=new ArrayList<>();
+        model.addAttribute("lettersInfo",lettersInfo);
+
+        //返回视图页
+        return "/site/letter-detail";
     }
 
 

@@ -138,7 +138,8 @@
 							<div class="text-muted font-size-12">
 								<u class="mr-3" th:utext="${map.user.username}">寒江雪</u> 发布于 <b th:text="${#dates.format(map.post.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b>
 								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
+									<!--替换点赞数-->
+									<li class="d-inline ml-2">赞 <i th:text="${map.likeQty}">11</i></li>
 									<li class="d-inline ml-2">|</li>
 									<!--替換回帖數-->
 									<li class="d-inline ml-2">回帖 <span th:text="${map.post.commentCount}">7</span></li>
@@ -148,7 +149,7 @@
 					</li>
 				</ul>
 				<!-- 分页 if当页面计算为0 时，不显示分页 -->
-				<nav class="mt-5" th:if="${page.rows>0}">
+				<nav class="mt-5" th:if="${page.rows>0}" th:fragment="pagination">
 					<ul class="pagination justify-content-center">
                        <!--首页-->
 						<li class="page-item">

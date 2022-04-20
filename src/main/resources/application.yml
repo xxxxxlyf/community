@@ -25,6 +25,13 @@ spring:
     username: 1779178166@qq.com
     host: smtp.qq.com
 
+  #RedisProperties
+  redis:
+    host: localhost
+    #选定的数据库【默认的是0，redis共16个数据库】
+    database: 2
+
+
 # mybatis
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml

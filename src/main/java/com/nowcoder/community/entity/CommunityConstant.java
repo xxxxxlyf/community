@@ -32,12 +32,18 @@ public class CommunityConstant {
     public static int REMEMBER_EXPIRED_SECONDS=60*60*24*30;
 
     /**
-     * 评论对象类型-帖子
+     * 实体类型-帖子
      */
-    public static  int COMMENT_TYPE_POST=1;
+    public static  int ENTITY_TYPE_POST=1;
 
     /**
-     * 评论对象类型-评论
+     * 实体类型-评论
      */
-    public static  int COMMENT_TYPE_REPLY=2;
+    public static  int  ENTITY_TYPE_REPLY=2;
+
+
+    /**
+     * 实体类型-用户
+     */
+    public static  int ENTITY_TYPE_UER=3;
 }

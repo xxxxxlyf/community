@@ -1,18 +1,17 @@
 package com.nowcoder.community;
 
+import com.nowcoder.community.utils.RedisKeyUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.test.context.junit4.SpringRunner;
 
-
+import java.util.Set;
 
 
 @SpringBootTest
@@ -29,6 +28,8 @@ public class CommunityApplicationTests {
         String key="test:string";
         redisTemplate.opsForValue().set(key,"lyf");
         System.out.println(redisTemplate.opsForValue().get(key));
+
+        System.out.println( redisTemplate.opsForValue().get("key"));
     }
 
     @Test
@@ -48,5 +49,15 @@ public class CommunityApplicationTests {
 
         redisTemplate.exec();
 
+    }
+
+
+
+    @Test
+    public void testOpsZset(){
+        String folleweeKey= RedisKeyUtil.getUsersFolloweeKey(151,3);
+        Set range = redisTemplate.opsForZSet().range(folleweeKey, 0, -1);
+        boolean contains = range.contains(111);
+        System.out.println(contains);
     }
 }

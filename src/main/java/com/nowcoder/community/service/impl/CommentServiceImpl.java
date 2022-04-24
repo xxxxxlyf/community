@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
         int i =commentMapper.addComment(comment);
 
         //仅在对帖子进行评论时，才需要更新帖子中的评论数
-        if(comment.getEntityType()== CommunityConstant.COMMENT_TYPE_POST){
+        if(comment.getEntityType()== CommunityConstant.ENTITY_TYPE_POST){
 
             //增加评论数
             postMapper.increaseCount(comment.getEntityId());

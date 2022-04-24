@@ -8,16 +8,21 @@ package com.nowcoder.community.controller;
  */
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.CommunityConstant;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.service.impl.FollowService;
+import com.nowcoder.community.service.impl.LikeService;
 import com.nowcoder.community.utils.CommunityUtil;
+import com.nowcoder.community.utils.RedisKeyUtil;
 import com.nowcoder.community.utils.UserHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +52,12 @@ public class UserController {
 
     @Autowired
     private UserHolder holder;
+
+    @Autowired
+    private LikeService likeService;
+
+    @Autowired
+    private FollowService followService;
 
     //日志
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -185,7 +196,45 @@ public class UserController {
     }
 
 
+    /**
+     * 查询某人的个人主页
+     * @param model
+     * @param userId
+     * @return
+     */
+    @GetMapping("/getProfile/{userId}")
+    public String getUserProfile(@PathVariable("userId") int userId,Model model){
+        //查询当前用户信息
+        User current_user=holder.getUser();
+        //判断是否为当前用户 1是当前用户，2 非当前用户
+        int userstatus=current_user.getId()==userId?1:0;
+        model.addAttribute("userstatus",userstatus);
 
+
+        //查询userId对应的用户信息
+        User user=userService.selectUserById(userId);
+        if(user==null){
+            throw  new RuntimeException("该用户不存在");
+        }
+        model.addAttribute("user",user);
+
+        //查询当前用户收到的点赞数
+        int like_qty=likeService.getUserLikeQty(userId);
+        model.addAttribute("like_qty",like_qty);
+
+
+
+        //查询当前粉丝数与关注数
+        long followeeQty=followService.getFolloweeQty(user.getId(), CommunityConstant.ENTITY_TYPE_UER);
+        model.addAttribute("followeeQty",followeeQty);
+
+
+        long followerQty=followService.getFollowerQty(CommunityConstant.ENTITY_TYPE_UER,user.getId());
+        model.addAttribute("followerQty",followerQty);
+
+        //绑定业务数据后，回到前台处理页
+        return "/site/profile";
+    }
 
 
 }

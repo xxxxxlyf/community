@@ -4,7 +4,7 @@ import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.Message;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
-import com.nowcoder.community.service.MessageService;
+import com.nowcoder.community.service.impl.MessageService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.utils.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;

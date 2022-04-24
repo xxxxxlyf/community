@@ -88,8 +88,9 @@
 							发布于 <b th:text="${#dates.format(post.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b>
 							<ul class="d-inline float-right">
 								<li class="d-inline ml-2">
-									<a href="javascript:;" th:onclick="|like(this,1,${post.id});|" class="text-primary">
-										<b>赞</b> <i>11</i>
+									<a href="javascript:;" th:onclick="|like(this,1,${post.id},${post.userId});|" class="text-primary">
+										<!-- 动态显示帖子的点赞数-->
+										<b>赞</b> <i th:text="${postLikeQty}">11</i>
 									</a>
 								</li>
 								<li class="d-inline ml-2">|</li>
@@ -145,8 +146,8 @@
 								<ul class="d-inline float-right">
 									<!--用户点击该链接时触发点击事件 like(this,1,postId)-->
 									<li class="d-inline ml-2">
-										<a href="javascript:;" th:onclick="|like(this,2,${CommentOV.comment.id});|" class="text-primary">
-											<b>赞</b> (<i>1</i>)
+										<a href="javascript:;" th:onclick="|like(this,2,${CommentOV.comment.id},${CommentOV.comment.userId});|" class="text-primary">
+											<b>赞</b> (<i th:text="${CommentOV.commentLikeQty}">1</i>)
 										</a>
 									</li>
 									<li class="d-inline ml-2">|</li>
@@ -175,8 +176,8 @@
 										<span th:text="${#dates.format(replyOV.replyComment.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</span>
 										<ul class="d-inline float-right">
 											<li class="d-inline ml-2">
-												<a href="javascript:;" th:onclick="|like(this,2,${replyOV.replyComment.id});|" class="text-primary">
-													<b>赞</b> (<i>1</i>)
+												<a href="javascript:;" th:onclick="|like(this,2,${replyOV.replyComment.id},${replyOV.replyComment.userId});|" class="text-primary">
+													<b>赞</b> (<i th:text="${replyOV.replyCQty}">1</i>)
 												</a>
 											    </a>
 											</li>
@@ -330,6 +331,27 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
 	<script th:src="@{/js/global.js}"></script>
-	<script th:src="@{/js/like.js}"></script>
+<!--<script th:src="@{/js/like.js}"></script>-->
+    <script>
+		function like(btn,entityType,entityId,entityUserId) {
+			$.get(
+					//请求路径
+					"/like",
+					//请求参数
+					{"entityType":entityType,"entityId":entityId,"entityUserId":entityUserId},
+					//处理返回值
+					function (data) {
+						//序列化成为json对象
+						data = $.parseJSON(data);
+						//点赞成功,动态更新信息
+						if(data.code==0){
+							$(btn).children("i").text(data.likeQty);
+							$(btn).children("b").text(data.likeStatus==1?"已赞":"赞");
+						}
+					}
+
+			);
+		}
+	</script>
 </body>
 </html>

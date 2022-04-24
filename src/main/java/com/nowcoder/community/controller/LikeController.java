@@ -1,7 +1,7 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
-import com.nowcoder.community.service.LikeService;
+import com.nowcoder.community.service.impl.LikeService;
 import com.nowcoder.community.utils.CommunityUtil;
 import com.nowcoder.community.utils.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +30,17 @@ public class LikeController {
 
     /**
      * 用户点赞 异步请求，返回统一格式，ajax可以动态刷新页面
-     * @param entityType
-     * @param entityId
+     * @param entityType 被赞实体类型
+     * @param entityId 被赞实体的id
+     * @param entityUserId 被赞实体的作者id
      * @return
      */
     @LoginRequired
     @GetMapping("/like")
     @ResponseBody
-    public String userLike(int entityType,int entityId){
+    public String userLike(int entityType,int entityId,int entityUserId){
         int userId=userHolder.getUser().getId();
-        likeService.like(userId,entityId,entityType);
+        likeService.like(userId,entityId,entityType,entityUserId);
 
         //like数
         long likeQty=likeService.getEntityLikeQty(entityId,entityType);

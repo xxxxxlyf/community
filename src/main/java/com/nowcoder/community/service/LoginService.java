@@ -1,5 +1,7 @@
 package com.nowcoder.community.service;
 
+import com.nowcoder.community.entity.LoginTicket;
+
 import java.util.Map;
 
 public interface LoginService {
@@ -18,6 +20,13 @@ public interface LoginService {
      * @param ticket
      */
     void logOut(String ticket);
+
+    /**
+     * 查询登录凭证
+     * @param ticket
+     * @return
+     */
+    LoginTicket getLoginTicket(String ticket);
 
 //    /**
 //     * 忘记密码

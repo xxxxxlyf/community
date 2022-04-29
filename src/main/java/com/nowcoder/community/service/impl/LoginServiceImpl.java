@@ -6,8 +6,10 @@ import com.nowcoder.community.mapper.LoginTicketMapper;
 import com.nowcoder.community.mapper.UserMapper;
 import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.utils.CommunityUtil;
+import com.nowcoder.community.utils.RedisKeyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -23,8 +25,11 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private UserMapper userMapper;
+
     @Autowired
-    private LoginTicketMapper ticketMapper;
+    private RedisTemplate redisTemplate;
+//    @Autowired
+//    private LoginTicketMapper ticketMapper;
 
     @Override
     public Map<String, String> login(String username, String password, long expiredMs) {
@@ -58,8 +63,15 @@ public class LoginServiceImpl implements LoginService {
          ticket.setUserId(user.getId());
          ticket.setStatus(0);
          ticket.setTicket(CommunityUtil.getUUID());
-         ticketMapper.addLoginTicket(ticket);
+
+         //hash 数据结构验证
+         String key= RedisKeyUtil.getLoginTiketKey(ticket.getTicket());
+         //存入loginTiket的相关信息,一个序列化的字符串,意即Hash结构
+         redisTemplate.opsForValue().set(key,ticket);
+         //ticketMapper.addLoginTicket(ticket);
+
          map.put("ticket",ticket.getTicket());
+
          return map;
 
     }
@@ -67,9 +79,22 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public void logOut(String ticket) {
         //修改登录凭证的状态，1表示退出登录
-        ticketMapper.updStatus(ticket,1);
+        //ticketMapper.updStatus(ticket,1);
+
+        //删除redis中的loginTicket
+        String key= RedisKeyUtil.getLoginTiketKey(ticket);
+        LoginTicket loginTicket=(LoginTicket) redisTemplate.opsForValue().get(key);
+        loginTicket.setStatus(1);
+
+        redisTemplate.opsForValue().set(key,loginTicket);
     }
 
+    @Override
+    public LoginTicket getLoginTicket(String ticket) {
+        String key= RedisKeyUtil.getLoginTiketKey(ticket);
+        LoginTicket loginTicket=(LoginTicket) redisTemplate.opsForValue().get(key);
+        return loginTicket;
+    }
 
 
 }

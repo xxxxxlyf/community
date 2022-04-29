@@ -24,6 +24,15 @@ public class RedisKeyUtil {
     //关注某个实体的粉丝信息
     private static  final String PREFIX_FOLLOWER="follower";
 
+    //验证码前缀
+    private static final String PREFIX_KAPTCHA="kaptcha";
+
+    //登录凭证前缀
+    private static  final String PREFIX_LOGIN_TICKET="loginTicket";
+
+
+    private static final String PREFIX_USER="user";
+
 
     /**
      * like:entity:entityType:entityId
@@ -62,5 +71,34 @@ public class RedisKeyUtil {
      */
     public static String getEntityFollwerKey(int entityId,int entityType){
         return PREFIX_FOLLOWER+SPLIT_SYNTAX+entityId+SPLIT_SYNTAX+entityType;
+    }
+
+    /**
+     * key=kaptcha:owner
+     * @param owner
+     * @return
+     */
+    public static  String getKaptchaKey(String owner){
+        return PREFIX_KAPTCHA+SPLIT_SYNTAX+owner;
+    }
+
+
+    /**
+     * key=loginTicket:ticket String 类型，存的是LoginTicket
+     * @param ticket
+     * @return
+     */
+    public static  String getLoginTiketKey(String ticket){
+        return PREFIX_LOGIN_TICKET+SPLIT_SYNTAX+ticket;
+    }
+
+
+    /**
+     * key=user:userId String 类型
+     * @param userId
+     * @return
+     */
+    public static  String getUserKey(int userId){
+        return PREFIX_USER+SPLIT_SYNTAX+userId;
     }
 }

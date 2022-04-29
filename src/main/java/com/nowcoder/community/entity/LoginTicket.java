@@ -2,6 +2,7 @@ package com.nowcoder.community.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Date;
  * 登录凭证类
  **/
 @Data
-public class LoginTicket {
+public class LoginTicket implements Serializable {
 
     /**
      * 行标

@@ -1,5 +1,8 @@
 package com.nowcoder.community.service.impl;
 
+import com.nowcoder.community.entity.CommunityConstant;
+import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.utils.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -8,7 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author lyf
@@ -24,6 +27,10 @@ public class FollowService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+
+    @Autowired
+    private UserService userService;
 
 
     /**
@@ -111,5 +118,47 @@ public class FollowService {
         boolean contains = range.contains(entityId);
         return contains;
     }
+
+
+    /**
+     * 分页查询当前用户关注对象列表/用户粉丝列表
+     * @param followType 1关注数 0 粉丝数
+     * @param userId 查询的用户
+     * @param offset 分页起始索引
+     * @param limit 每页有效的行数
+     * @return
+     */
+    public List<Map<String,Object>> getFollowInfoLists(int followType,int userId,int offset,int limit)
+    {
+        String key=followType==1? RedisKeyUtil.getUsersFolloweeKey(userId, CommunityConstant.ENTITY_TYPE_UER):RedisKeyUtil.getEntityFollwerKey(userId,CommunityConstant.ENTITY_TYPE_UER);
+        //倒序查询，按照时间从大到小排
+        Set<Integer> userIds = redisTemplate.opsForZSet().reverseRange(key, offset, offset + limit - 1);
+
+        if(userIds==null){
+            return null;
+        }else{
+            //根据用户id遍历信息
+            List<Map<String,Object>>lists=new ArrayList<>();
+            for(int id:userIds){
+                Map<String,Object>map=new HashMap<>();
+                //根据id查询分数
+                User user = userService.selectUserById(id);
+                map.put("user",user);
+
+                //查询ZSET有序集合中的分数--时间
+                Double score = redisTemplate.opsForZSet().score(key, id);
+                Date followTime=new Date(score.longValue());
+                map.put("followTime",followTime);
+                lists.add(map);
+
+                //查询当前用户是否关注列表中的对象
+                boolean status=hasFollowEntity(userId,CommunityConstant.ENTITY_TYPE_UER,id);
+                map.put("followStatus",status);
+            }
+
+            return lists;
+        }
+    }
+
 
 }

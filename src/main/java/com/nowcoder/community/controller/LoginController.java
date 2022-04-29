@@ -5,8 +5,11 @@ import com.nowcoder.community.entity.CommunityConstant;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.utils.CommunityUtil;
+import com.nowcoder.community.utils.RedisKeyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -22,7 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 刘逸菲
@@ -41,22 +46,27 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 返回注册界面视图
+     *
      * @return
      */
     @GetMapping("/getRegisterPage")
-    public  String getRegisterPage(){
+    public String getRegisterPage() {
         //注册界面视图路径 classpath:templates/site/register.html
         return "/site/register";
     }
 
     /**
      * 返回登录界面视图
+     *
      * @return
      */
     @GetMapping("/login")
-    public  String getLoginPage(){
+    public String getLoginPage() {
         //注册界面视图路径 classpath:templates/site/register.html
         return "/site/login";
     }
@@ -64,50 +74,52 @@ public class LoginController {
 
     /**
      * 注册用户
+     *
      * @param model
      * @param user
      */
     @PostMapping("/registerUser")
-    public String registerUser(Model model, User user){
+    public String registerUser(Model model, User user) {
 
-         Map<String, Object> map = userService.registerUser(user);
-         if(map==null||map.keySet().isEmpty()){
-             //等待账户激活后续登录操作
-             model.addAttribute("msg","账号注册成功，已经向您的邮箱发送了账号激活邮件，请尽快激活账号");
-             model.addAttribute("target","/index");
-             return "/site/operate-result";
-         }else{
-             model.addAttribute("user",user);
-             model.addAttribute("usernameExp",map.get("usernameExp"));
-             model.addAttribute("passwordExp",map.get("passwordExp"));
-             model.addAttribute("emailExp",map.get("emailExp"));
-             return "/site/register";
+        Map<String, Object> map = userService.registerUser(user);
+        if (map == null || map.keySet().isEmpty()) {
+            //等待账户激活后续登录操作
+            model.addAttribute("msg", "账号注册成功，已经向您的邮箱发送了账号激活邮件，请尽快激活账号");
+            model.addAttribute("target", "/index");
+            return "/site/operate-result";
+        } else {
+            model.addAttribute("user", user);
+            model.addAttribute("usernameExp", map.get("usernameExp"));
+            model.addAttribute("passwordExp", map.get("passwordExp"));
+            model.addAttribute("emailExp", map.get("emailExp"));
+            return "/site/register";
 
-         }
+        }
     }
 
 
     /**
      * //http://localhost:8090/user/activation/userId/code
+     *
      * @param userId
      * @param activationCode
      * @return
      */
     @GetMapping(path = "/user/activation/{userId}/{activationCode}")
-    public String activateUser(Model model,@PathVariable("userId") int userId,@PathVariable("activationCode")  String activationCode){
+    public String activateUser(Model model, @PathVariable("userId") int userId, @PathVariable("activationCode") String activationCode) {
         int i = userService.activateUser(userId, activationCode);
-        if(i== CommunityConstant.ACTIVATION_SUCCESS){
-            model.addAttribute("msg","账号已成功激活，可登录使用");
+        if (i == CommunityConstant.ACTIVATION_SUCCESS) {
+            model.addAttribute("msg", "账号已成功激活，可登录使用");
             //登录返回登录界面
-            model.addAttribute("target","/login");
-        }else if(i== CommunityConstant.ACTIVATION_REPEAT){
-            model.addAttribute("msg","账号无需重复激活");
+            model.addAttribute("target", "/login");
+        } else if (i == CommunityConstant.ACTIVATION_REPEAT) {
+            model.addAttribute("msg", "账号无需重复激活");
             //返回首页
-            model.addAttribute("target","/index");
-        }else if(i== CommunityConstant.ACTIVATION_FAILED){
-            model.addAttribute("msg","账号信息错误或激活码错误，激活账号失败");
+            model.addAttribute("target", "/index");
+        } else if (i == CommunityConstant.ACTIVATION_FAILED) {
+            model.addAttribute("msg", "账号信息错误或激活码错误，激活账号失败");
             //返回首页
-            model.addAttribute("target","/index");
+            model.addAttribute("target", "/index");
         }
         return "/site/operate-result";
     }
@@ -115,29 +127,44 @@ public class LoginController {
 
     /**
      * 获得生成的随机验证码
+     *
      * @param response
      * @param httpSession
      */
     @GetMapping("/login/getKapatchaImage")
-    public void getKapatchaImage(HttpServletResponse response, HttpSession httpSession){
+    public void getKapatchaImage(HttpServletResponse response /**, HttpSession httpSession**/) {
         //生成验证码
         String text = producer.createText();
         BufferedImage image = producer.createImage(text);
 
         //验证码字符串写入到session中.服务器将依托cookie 【key,value】value中存放的是当前生成的sessionid.
         //以后浏览器访问浏览器时，将会携带该cookie信息，使得请求信息是有状态的
-        httpSession.setAttribute("kapatchaStr", text);
+        //httpSession.setAttribute("kapatchaStr", text);
+
+
+        //1向浏览器发送owner cookie
+        String owner = CommunityUtil.getUUID();
+        Cookie cookie = new Cookie("owner", owner);
+        //cookie所有路径下有效
+        cookie.setPath("/");
+        //cookie的最大有效时长为60s
+        cookie.setMaxAge(60);
+        response.addCookie(cookie);
+
+        //2验证码存入到redis中
+        String redisKey = RedisKeyUtil.getKaptchaKey(owner);
+        redisTemplate.opsForValue().set(redisKey, text, 60, TimeUnit.SECONDS);
+
 
         //图片响应给response
         //响应格式为.png的图片
         response.setContentType("image/png");
         try {
             ServletOutputStream outputStream = response.getOutputStream();
-            ImageIO.write(image,"png",outputStream);
+            ImageIO.write(image, "png", outputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
 
     }
@@ -145,31 +172,44 @@ public class LoginController {
 
     /**
      * 用户登录账号 post方式
-     * @param username 用户名
-     * @param password 密码
-     * @param code 验证码
+     *
+     * @param username   用户名
+     * @param password   密码
+     * @param code       验证码
      * @param rememberMe 是否记住密码
+     * @return
      * @Param model 用于绑定视图中的数据
      * @Param httpSession session【储存在服务端】
-     * @return
      */
     @PostMapping("/loginUser")
-    public String loginUser(String username, String password, String code, boolean rememberMe, Model model,HttpSession session,HttpServletResponse response){
+    public String loginUser(String username, String password, String code, boolean rememberMe, Model model, /**HttpSession session,**/HttpServletResponse response, @CookieValue("owner") String owner) {
         //验证码是否正确
         //从session中获得之前存放的验证码【验证码比较时忽略大小写】
-        String o = (String)session.getAttribute("kapatchaStr");
-        if(StringUtils.isBlank(o)||StringUtils.isBlank(code)||!code.toUpperCase().equals(o)){
-            model.addAttribute("codeError","验证码输入错误");
+        //String o = (String)session.getAttribute("kapatchaStr");
+
+        String o = null;
+        //获得redis数据库中存取的验证码
+        if(StringUtils.isNoneBlank(owner)){
+            o = (String) redisTemplate.opsForValue().get(RedisKeyUtil.getKaptchaKey(owner));
+        }else{
+            model.addAttribute("codeError", "验证码无效，刷新后重试");
             //登录失败，返回登录页面
             return "/site/login";
         }
 
-        int expiredMs=rememberMe?CommunityConstant.REMEMBER_EXPIRED_SECONDS:CommunityConstant.DEFAULT_EXPIRED_SECONDS;
-        Map<String,String> map=loginService.login(username,password,expiredMs);
-        if(map.containsKey("ticket")){
+
+        if (StringUtils.isBlank(o) || StringUtils.isBlank(code) || !code.toUpperCase().equals(o)) {
+            model.addAttribute("codeError", "验证码输入错误");
+            //登录失败，返回登录页面
+            return "/site/login";
+        }
+
+        int expiredMs = rememberMe ? CommunityConstant.REMEMBER_EXPIRED_SECONDS : CommunityConstant.DEFAULT_EXPIRED_SECONDS;
+        Map<String, String> map = loginService.login(username, password, expiredMs);
+        if (map.containsKey("ticket")) {
             //cookie中存入登录用户凭证
             //cookie是一个特殊的键值对信息，存放重要的信息
-            Cookie cookie=new Cookie("ticket",map.get("ticket"));
+            Cookie cookie = new Cookie("ticket", map.get("ticket"));
             //cookie设置最大有效时间，设置这个属性时，不会存在用户端的内存中，而是存放在客户端的硬盘空间中
             cookie.setMaxAge((int) expiredMs);
             //设置有效的路径
@@ -178,9 +218,9 @@ public class LoginController {
             response.addCookie(cookie);
             //登录成功后，重定向到首页
             return "redirect:/index";
-        }else{
-            model.addAttribute("userError",map.get("userError"));
-            model.addAttribute("passwordError",map.get("passwordError"));
+        } else {
+            model.addAttribute("userError", map.get("userError"));
+            model.addAttribute("passwordError", map.get("passwordError"));
             //返回登录首页
             return "/site/login";
         }
@@ -188,7 +228,7 @@ public class LoginController {
 
 
     @GetMapping("/logout")
-    public String logOut(@CookieValue("ticket") String cookieValue){
+    public String logOut(@CookieValue("ticket") String cookieValue) {
         loginService.logOut(cookieValue);
         //重定向到登录页面
         return "redirect:/login";

@@ -84,14 +84,15 @@
                             <!--当前用户时，隐藏关注按钮-->
 							<!--隐藏参数-->
 							<input type="hidden" id="entityId" th:value="${user.id}" >
-							<button type="button" id="follow-btn" class="btn btn-info btn-sm float-right mr-5 follow-btn">关注TA</button>
+							<button type="button" id="follow-btn"  th:if="${userstatus!=1}"
+									th:class="|btn ${flag?'btn-secondary':'btn-info'} btn-sm float-right mr-5 follow-btn|" th:text="${flag?'已关注':'关注TA'}">关注TA</button>
 						</h5>
 						<div class="text-muted mt-3">
 							<span>注册于 <i class="text-muted" th:text="${#dates.format(user.createTime,'yyyy-MM-dd HH:mm:ss')}">2015-06-12 15:20:12</i></span>
 						</div>
 						<div class="text-muted mt-3 mb-5">
-							<span>关注了 <a class="text-primary" href="followee.html"></a> <i th:text="${followeeQty}">5</i>人</span>
-							<span class="ml-4">关注者 <a class="text-primary" href="follower.html"></a> <i th:text="${followerQty}">123</i>人</span>
+							<span>关注了 <a class="text-primary" th:href="@{|/getUserFollowees/${user.id}|}"></a> <i th:text="${followeeQty}">5</i>人</span>
+							<span class="ml-4">关注者 <a class="text-primary" th:href="@{|/getUserFollowers/${user.id}|}"></a> <i th:text="${followerQty}">123</i>人</span>
 							<span class="ml-4">获得了 <i class="text-danger" th:text="${like_qty}">87</i> 个赞</span>
 						</div>
 					</div>
@@ -193,10 +194,12 @@
 						}
 				);
 				//修改信息
-				$(btn).text("已关注").removeClass("btn-info");
+				$(btn).text("已关注").removeClass("btn-info").addClass("btn-secondary");
 			} else {
 				// 取消关注
-				"/unfollow",
+				$.post(
+
+						"/unfollow",
 						{"entityType":3,"entityId":$(btn).prev().val()},
 						function(data) {
 							data=$.parseJSON(data);
@@ -208,7 +211,8 @@
 								alert(data.msg)
 							}
 						}
-				$(btn).text("关注TA").addClass("btn-info");
+				)
+				$(btn).text("关注TA").removeClass("btn-secondary").addClass("btn-info");
 			}
 		}
 	</script>

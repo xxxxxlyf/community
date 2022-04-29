@@ -223,7 +223,6 @@ public class UserController {
         model.addAttribute("like_qty",like_qty);
 
 
-
         //查询当前粉丝数与关注数
         long followeeQty=followService.getFolloweeQty(user.getId(), CommunityConstant.ENTITY_TYPE_UER);
         model.addAttribute("followeeQty",followeeQty);
@@ -231,6 +230,11 @@ public class UserController {
 
         long followerQty=followService.getFollowerQty(CommunityConstant.ENTITY_TYPE_UER,user.getId());
         model.addAttribute("followerQty",followerQty);
+
+
+        //判断当前用户是否关注主页用户
+        boolean flag=followService.hasFollowEntity(current_user.getId(),CommunityConstant.ENTITY_TYPE_UER,user.getId());
+        model.addAttribute("flag",flag);
 
         //绑定业务数据后，回到前台处理页
         return "/site/profile";

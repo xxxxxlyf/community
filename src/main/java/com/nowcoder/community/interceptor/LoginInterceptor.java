@@ -4,6 +4,7 @@ import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.mapper.LoginTicketMapper;
 import com.nowcoder.community.mapper.UserMapper;
+import com.nowcoder.community.service.LoginService;
 import com.nowcoder.community.utils.CookieUtil;
 import com.nowcoder.community.utils.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,11 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private UserMapper mapper;
 
-    @Autowired
-    private LoginTicketMapper loginTicketMapper;
+//    @Autowired
+//    private LoginTicketMapper loginTicketMapper;
 
+    @Autowired
+    private LoginService loginService;
 
     @Autowired
     private UserHolder holder;
@@ -49,7 +52,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         String ticket= CookieUtil.getCookieValue(request,"ticket");
         if(ticket!=null){
             //根据ticket查询登录凭证
-            LoginTicket loginTicket=loginTicketMapper.getTicketInfo(ticket);
+            //LoginTicket loginTicket=loginTicketMapper.getTicketInfo(ticket);
+            LoginTicket loginTicket=loginService.getLoginTicket(ticket);
             if(loginTicket!=null&&loginTicket.getStatus()==0&&loginTicket.getExpired().after(new Date())){
                 //有效时段内，在进入Controller之前查询用户信息
                 //在请求结束前，使用的是同一个线程来处理本次请求，存入到本地线程组中

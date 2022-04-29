@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
  * @author 刘逸菲
  * @create 2022-03-22 21:30
  * 登录凭证Mapper[采用注解形式编写]
+ * Deprecated 标识该组件不推荐使用
  **/
 @Mapper
 @Repository
+@Deprecated
 public interface LoginTicketMapper {
 
     /**

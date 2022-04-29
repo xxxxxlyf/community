@@ -6,9 +6,11 @@ import com.nowcoder.community.mapper.UserMapper;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.utils.CommunityUtil;
 import com.nowcoder.community.utils.MailUtil;
+import com.nowcoder.community.utils.RedisKeyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -34,12 +36,21 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private TemplateEngine templateEngine;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Value("${community.domain}")
     private String domain;
 
     @Override
     public User selectUserById(int id) {
-        return mapper.selectUserById(id);
+        User u=  getChache(id);
+        if(u==null){
+            u= mapper.selectUserById(id);
+            //user 存入缓存
+            addChache(u);
+        }
+        return u;
     }
 
     @Override
@@ -102,8 +113,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int activateUser(int userId, String activationCode) {
-        //查询用户信息
-        User user = mapper.selectUserById(userId);
+        //查询用户信息【激活用户后，调用内部方法将用户信息存入缓存】
+        User user = selectUserById(userId);
         if (user != null) {
             if (user.getStatus() == 1) {
                 return CommunityConstant.ACTIVATION_REPEAT;
@@ -123,13 +134,45 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUserHeader(int userId,String headerUrl){
-      return    mapper.updHeader(userId,headerUrl);
+
+      //更新用户缓存
+      int i=  mapper.updHeader(userId,headerUrl);
+      if(i==1){
+          //成功更新头像后删除用户缓存
+          deleChache(userId);
+      }
+      return i;
     }
 
     @Override
     public int updateUserPassport(int userId, String password) {
-        return mapper.updPassword(userId,password);
+        //更新用户缓存
+        int i= mapper.updPassword(userId,password);
+        if(i==1){
+            //成功更新密码后删除用户缓存
+            deleChache(userId);
+        }
+        return i;
     }
 
 
+    //1 优先从redis缓存中获取用户
+    private User getChache(int userId){
+        String key= RedisKeyUtil.getUserKey(userId);
+        User u= (User) redisTemplate.opsForValue().get(key);
+        return u;
+    }
+
+
+    //2 数据更新后需要删除原来的缓存
+    private void deleChache(int userId){
+        String key= RedisKeyUtil.getUserKey(userId);
+        redisTemplate.delete(key);
+    }
+
+    //3 插入用戶緩存
+    private void addChache(User u){
+        String key= RedisKeyUtil.getUserKey(u.getId());
+        redisTemplate.opsForValue().set(key,u);
+    }
 }

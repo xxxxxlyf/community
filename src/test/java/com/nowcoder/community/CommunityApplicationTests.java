@@ -1,5 +1,6 @@
 package com.nowcoder.community;
 
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.utils.RedisKeyUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,9 @@ public class CommunityApplicationTests {
         redisTemplate.opsForValue().set(key,"lyf");
         System.out.println(redisTemplate.opsForValue().get(key));
 
-        System.out.println( redisTemplate.opsForValue().get("key"));
+        System.out.println( redisTemplate.opsForValue().get("loginTicket:536c6dd926ee44ee9d6b7dde0cf3641f"));
+        LoginTicket ticket=(LoginTicket) redisTemplate.opsForValue().get("loginTicket:536c6dd926ee44ee9d6b7dde0cf3641f");
+        System.out.println(ticket);
     }
 
     @Test
